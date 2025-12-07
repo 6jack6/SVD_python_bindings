@@ -40,7 +40,7 @@ add_library(svd_core
 
 target_include_directories(svd_core
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:include>
 )
 
@@ -76,12 +76,16 @@ endif()
 
 target_link_libraries(${_svd_binding_target} PRIVATE svd::core)
 
-target_include_directories(${_svd_binding_target} PRIVATE include ${_pybind11_include_dirs})
+target_include_directories(${_svd_binding_target} PRIVATE src ${_pybind11_include_dirs})
 
 set_target_properties(${_svd_binding_target} PROPERTIES OUTPUT_NAME "svd_bindings")
 
 install(TARGETS svd_core EXPORT SVDTargets)
-install(DIRECTORY include/ DESTINATION include)
+install(
+    DIRECTORY src/svd/
+    DESTINATION include/svd
+    FILES_MATCHING
+        PATTERN "*.hpp")
 
 install(TARGETS svd_bindings
         LIBRARY DESTINATION ${Python3_SITEARCH}
