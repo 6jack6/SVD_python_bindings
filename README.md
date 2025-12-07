@@ -87,3 +87,15 @@ PYTHONPATH=build python3 examples/simple_usage.py
 ```
 
 Это загрузит модуль из каталога `build` (без установки в систему) и выведет результаты SVD для матрицы из примера.
+
+## Сборка wheel-пакета
+
+Для распространения проекта как python-пакета используется [scikit-build-core](https://scikit-build-core.readthedocs.io). Предварительно активируйте venv и установите `build`:
+
+```bash
+source .venv/bin/activate
+python -m pip install build
+python -m build
+```
+
+Готовые артефакты (`.whl` и `.tar.gz`) появятся в каталоге `dist/`. Установить их можно стандартной командой `python -m pip install dist/svd_python_bindings-0.1.0-py3-none-any.whl`.
