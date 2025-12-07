@@ -1,6 +1,6 @@
 import numpy as np
 
-import svd_bindings
+import svd
 
 
 def main() -> None:
@@ -13,7 +13,7 @@ def main() -> None:
         dtype=np.float64,
     )
 
-    u, s, v = svd_bindings.svd(matrix)
+    u, s, v = svd.svd(matrix)
 
     print("Matrix:\n", matrix)
     print("U:\n", u)

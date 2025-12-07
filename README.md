@@ -45,7 +45,7 @@ cmake -S . -B build
 cmake --build build
 ```
 
-После сборки модуль `svd_bindings` появится в каталоге `build/`.
+После сборки расширение окажется в каталоге `build/svd/`.
 
 > **Примечание.** `CMakeLists.txt` автоматически выбирает `python3` из PATH и находит `pybind11`, установленный через pip, поэтому дополнительные переменные окружения не нужны.
 
@@ -59,12 +59,12 @@ cmake --install build
 
 ```python
 import numpy as np
-import svd_bindings
+import svd
 
 A = np.array([[3.0, 1.0],
               [0.0, 2.0],
               [0.0, 0.0]])
-U, S, V = svd_bindings.svd(A)
+U, S, V = svd.svd(A)
 print("U =", U)
 print("S =", S)
 print("V =", V)
@@ -83,10 +83,10 @@ print("V =", V)
 После сборки можно запустить пример без установки модуля:
 
 ```bash
-PYTHONPATH=build python3 examples/simple_usage.py
+PYTHONPATH=python python3 examples/simple_usage.py
 ```
 
-Это загрузит модуль из каталога `build` (без установки в систему) и выведет результаты SVD для матрицы из примера.
+`__init__.py` пакета автоматически добавит каталог `build/svd` в путь поиска модулей, поэтому расширение обнаружится и без установки.
 
 ## Сборка wheel-пакета
 
@@ -99,3 +99,23 @@ python -m build
 ```
 
 Готовые артефакты (`.whl` и `.tar.gz`) появятся в каталоге `dist/`. Установить их можно стандартной командой `python -m pip install dist/svd_python_bindings-0.1.0-py3-none-any.whl`.
+
+## Docker
+
+`Dockerfile` собирает wheel внутри образа Python 3.10 slim, затем устанавливает его в чистом окружении и выполняет sanity-check:
+
+```bash
+# Собрать образ со свежим wheel
+docker build -t svd-wheel .
+
+# Запустить проверку
+docker run --rm svd-wheel
+```
+
+Чтобы получить wheel автоматически из сборки, используется отдельный экспортный этап (требуется BuildKit, по умолчанию он включён):
+
+```bash
+docker build --target wheel_export -o dist_from_docker .
+```
+
+После завершения команда поместит содержимое `/app/dist` (из docker-сборки) в локальный каталог `dist_from_docker`, откуда wheel можно устанавливать `pip install dist_from_docker/<wheel>.whl`.

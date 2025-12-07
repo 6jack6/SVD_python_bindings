@@ -80,6 +80,14 @@ target_include_directories(${_svd_binding_target} PRIVATE src ${_pybind11_includ
 
 set_target_properties(${_svd_binding_target} PROPERTIES OUTPUT_NAME "svd_bindings")
 
+# Emit the extension into a package-friendly folder inside the build tree.
+set(_svd_package_dir "${CMAKE_BINARY_DIR}/svd")
+set_target_properties(${_svd_binding_target}
+    PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${_svd_package_dir}"
+        RUNTIME_OUTPUT_DIRECTORY "${_svd_package_dir}"
+        ARCHIVE_OUTPUT_DIRECTORY "${_svd_package_dir}")
+
 install(TARGETS svd_core EXPORT SVDTargets)
 install(
     DIRECTORY src/svd/
@@ -87,9 +95,16 @@ install(
     FILES_MATCHING
         PATTERN "*.hpp")
 
+set(_svd_install_subdir "svd")
+set(_svd_python_site "${Python3_SITEARCH}")
+if(SKBUILD)
+    # When building wheels, scikit-build installs into a staging prefix, so keep the
+    # destination relative.
+    set(_svd_python_site ".")
+endif()
 install(TARGETS svd_bindings
-        LIBRARY DESTINATION ${Python3_SITEARCH}
-        ARCHIVE DESTINATION ${Python3_SITEARCH}
-        RUNTIME DESTINATION ${Python3_SITEARCH})
+        LIBRARY DESTINATION ${_svd_python_site}/${_svd_install_subdir}
+        ARCHIVE DESTINATION ${_svd_python_site}/${_svd_install_subdir}
+        RUNTIME DESTINATION ${_svd_python_site}/${_svd_install_subdir})
 
 install(EXPORT SVDTargets FILE SVDTargets.cmake NAMESPACE svd:: DESTINATION lib/cmake/SVDPythonBindings)
