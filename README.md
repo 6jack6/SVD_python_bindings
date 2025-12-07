@@ -88,6 +88,23 @@ PYTHONPATH=python python3 examples/simple_usage.py
 
 `__init__.py` пакета автоматически добавит каталог `build/svd` в путь поиска модулей, поэтому расширение обнаружится и без установки.
 
+## Тесты
+
+Покрытие реализовано через pytest. Локально (после сборки) выполните:
+
+```bash
+PYTHONPATH=python python -m pytest tests
+```
+
+Те же тесты запускаются внутри docker-контейнера, поэтому достаточно собрать образ и выполнить:
+
+```bash
+docker build -t svd-wheel .
+docker run --rm svd-wheel
+```
+
+Команда `docker run` вернёт код 0 только если оба теста пройдены.
+
 ## Сборка wheel-пакета
 
 Для распространения проекта как python-пакета используется [scikit-build-core](https://scikit-build-core.readthedocs.io). Предварительно активируйте venv и установите `build`:
